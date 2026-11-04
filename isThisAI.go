@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"log"
+	"net/http"
+)
+
+type Page struct {
+}
 
 func main() {
-	fmt.Println("Hello, world.")
+	http.Handle("/", http.FileServer(http.Dir("./page")))
+	log.Fatal(http.ListenAndServe(":4321", nil))
 }
