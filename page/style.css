@@ -1,0 +1,65 @@
+.quest-div {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.quest-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.is-this-ai {
+  width: 100vw;
+  text-align: center;
+  font-size: 30px;
+}
+
+.img-div {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+}
+
+#guess-img {
+  width: 400px;
+  cursor: zoom-in;
+}
+
+.answer-div {
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  gap: 200px;
+}
+
+.yes-button,
+.no-button {
+  font-size: 30px;
+  height: 80px;
+  width: 80px;
+  border-radius: 50%;
+  border: none;
+  color: white;
+}
+
+.yes-button {
+  background: green;
+}
+.yes-button:hover {
+  background: lightgreen;
+}
+.yes-button:active {
+  background: green;
+}
+
+.no-button {
+  background: red;
+}
+.no-button:hover {
+  background: pink;
+}
+.no-button:active {
+  background: red;
+}
