@@ -5,21 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Is this AI?</title>
-    <link href="style.css" rel="stylesheet">
+    <link href="/static/style.css" type="text/css" rel="stylesheet">
 </head>
 
 <body>
     <div class="quest-div">
         <div class="quest-content">
-            <div class="is-this-ai"><b>Is this AI?</b></div>
-            <div class="img-div"><img id="guess-img" src="h3o3xikm8czh1.jpeg" alt="image to guess"></div>
+            <div class="is-this-ai">
+                <b>Is this AI?</b>
+            </div>
+            <div class="img-div">
+                <img id="guess-img" src="/asset/{{ .Id }}.jpeg" alt="image to guess">
+            </div>
             <div class="answer-div">
                 <button class="yes-button" type="button">Yes</button>
                 <button class="no-button" type="button">No</button>
             </div>
         </div>
     </div>
-    <script src="script.js">
+    <script src="/static/script.js">
     </script>
 </body>
 
