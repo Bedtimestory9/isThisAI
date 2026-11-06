@@ -7,6 +7,6 @@ guessImg.addEventListener("click", () => {
   if (isZoomed) {
     guessImg.style.width = "90vw";
   } else {
-    guessImg.style.width = "400px";
+    guessImg.style.removeProperty("width");
   }
 });

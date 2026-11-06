@@ -11,7 +11,7 @@ body {
 .quest-content {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 20px;
 }
 
 .is-this-ai {
@@ -27,7 +27,7 @@ body {
 }
 
 #guess-img {
-  width: 400px;
+  width: 500px;
   cursor: zoom-in;
 }
 
