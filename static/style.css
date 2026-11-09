@@ -28,6 +28,7 @@ body {
 
 #guess-img {
   width: 500px;
+  height: 400px;
   cursor: zoom-in;
 }
 
@@ -38,8 +39,11 @@ body {
   gap: 200px;
 }
 
-.yes-button,
-.no-button {
+#toast-div {
+  color: black;
+}
+
+.answer-button {
   font-size: 30px;
   height: 80px;
   width: 80px;
@@ -48,22 +52,22 @@ body {
   color: white;
 }
 
-.yes-button {
+#yes-button {
   background: green;
 }
-.yes-button:hover {
+#yes-button:hover {
   background: lightgreen;
 }
-.yes-button:active {
+#yes-button:active {
   background: green;
 }
 
-.no-button {
+#no-button {
   background: red;
 }
-.no-button:hover {
+#no-button:hover {
   background: pink;
 }
-.no-button:active {
+#no-button:active {
   background: red;
 }

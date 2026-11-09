@@ -15,11 +15,13 @@
                 <b>Is this AI?</b>
             </div>
             <div class="img-div">
-                <img id="guess-img" src="/asset/{{ .Id }}.jpeg" alt="image to guess">
+                <img id="guess-img" src="/asset/{{ .ID }}.jpeg" alt="image to guess">
             </div>
+                <div id="toast-div">
+                </div>
             <div class="answer-div">
-                <button class="yes-button" type="button">Yes</button>
-                <button class="no-button" type="button">No</button>
+                <button class="answer-button" id="yes-button" type="button">Yes</button>
+                <button class="answer-button" id="no-button" type="button">No</button>
             </div>
         </div>
     </div>

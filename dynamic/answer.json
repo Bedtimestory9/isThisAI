@@ -1,0 +1,12 @@
+[
+  { "id": 1, "isThisAI": false },
+  { "id": 2, "isThisAI": true },
+  { "id": 3, "isThisAI": true },
+  { "id": 4, "isThisAI": false },
+  { "id": 5, "isThisAI": true },
+  { "id": 6, "isThisAI": true },
+  { "id": 7, "isThisAI": false },
+  { "id": 8, "isThisAI": true },
+  { "id": 9, "isThisAI": false },
+  { "id": 10, "isThisAI": true }
+]
