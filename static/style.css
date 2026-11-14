@@ -1,5 +1,6 @@
 body {
   background-color: #f0ebdf;
+  box-sizing: border-box;
 }
 
 .quest-div {
@@ -11,7 +12,8 @@ body {
 .quest-content {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  align-items: center;
+  gap: 50px;
 }
 
 .is-this-ai {
@@ -21,53 +23,125 @@ body {
 }
 
 .img-div {
-  width: 100vw;
+  /* image + padding of flipbox front + 100px of empty space */
+  width: calc(500px + 20px + 20px + 100px);
   display: flex;
   justify-content: center;
+  align-items: center;
+}
+
+#overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #d1ccbf;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  transform: scale(0);
+  transition: 0.1s ease;
 }
 
 #guess-img {
-  width: 500px;
-  height: 400px;
+  max-width: 500px;
+  max-height: 400px;
   cursor: zoom-in;
+}
+
+.flip-box {
+  background-color: transparent;
+  /* max width of image + padding of flipbox front */
+  width: calc(500px + 20px + 20px);
+  height: 400px;
+  perspective: 1000px; /* Remove this if you don't want the 3D effect */
+}
+
+/* This container is needed to position the front and back side */
+.flip-box-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+/* This is to reference for the js css add-in */
+/* .flip-box:hover .flip-box-inner { */
+/*   transform: rotateY(180deg); */
+/* } */
+
+/* Position the front and back side */
+.flip-box-front,
+.flip-box-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+
+/* Style the front side (fallback if image is missing) */
+.flip-box-front {
+  background-color: #d1ccbf;
+  color: black;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Style the back side */
+.flip-box-back {
+  transform: rotateY(180deg);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  font-weight: bold;
+  color: black;
 }
 
 .answer-div {
   height: 200px;
   display: flex;
   justify-content: center;
-  gap: 200px;
 }
 
-#toast-div {
-  color: black;
+.button-div {
+  /* max width of image + padding of flipbox front */
+  width: calc(500px + 20px + 20px);
+  display: flex;
+  justify-content: center;
+  gap: 150px;
 }
 
 .answer-button {
   font-size: 30px;
-  height: 80px;
-  width: 80px;
-  border-radius: 50%;
-  border: none;
+  height: 60px;
+  width: 100px;
+  border-radius: 5px;
+  border: 1px solid rgb(111, 110, 105);
   color: white;
 }
 
 #yes-button {
-  background: green;
+  background: rgb(102, 128, 11);
 }
 #yes-button:hover {
-  background: lightgreen;
+  background: rgb(135, 154, 57);
 }
 #yes-button:active {
-  background: green;
+  background: rgb(102, 128, 11);
 }
 
 #no-button {
-  background: red;
+  background: rgb(175, 48, 41);
 }
 #no-button:hover {
-  background: pink;
+  background: rgb(209, 77, 65);
 }
 #no-button:active {
-  background: red;
+  background: rgb(175, 48, 41);
 }

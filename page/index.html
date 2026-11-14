@@ -1,32 +1,68 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Is this AI?</title>
-    <link href="/static/style.css" type="text/css" rel="stylesheet">
-</head>
+    <link href="/static/style.css" type="text/css" rel="stylesheet" />
+  </head>
 
-<body>
+  <body>
     <div class="quest-div">
-        <div class="quest-content">
-            <div class="is-this-ai">
-                <b>Is this AI?</b>
-            </div>
-            <div class="img-div">
-                <img id="guess-img" src="/asset/{{ .ID }}.jpeg" alt="image to guess">
-            </div>
-                <div id="toast-div">
-                </div>
-            <div class="answer-div">
-                <button class="answer-button" id="yes-button" type="button">Yes</button>
-                <button class="answer-button" id="no-button" type="button">No</button>
-            </div>
+      <div id="overlay"></div>
+      <div class="quest-content">
+        <div class="is-this-ai">
+          <b>Is this AI?</b>
         </div>
+        <div class="img-div">
+          <div class="flip-box">
+            <div class="flip-box-inner">
+              <div class="flip-box-front">
+                <img
+                  id="guess-img"
+                  src="/asset/{{ .ID }}.jpeg"
+                  alt="image to guess"
+                />
+              </div>
+              <div class="flip-box-back"></div>
+            </div>
+          </div>
+        </div>
+        <div class="answer-div">
+          <div class="button-div">
+            <button class="answer-button" id="yes-button" type="button">
+              Yes
+            </button>
+            <button class="answer-button" id="no-button" type="button">
+              No
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-    <script src="/static/script.js">
-    </script>
-</body>
+    <script src="/static/script.js"></script>
+    <script>
+      const overlay = document.querySelector("#overlay");
 
+      function createZoominImage() {
+        overlay.style.cssText = "transform: scale(1)";
+        const imgEl = document.createElement("img");
+        imgEl.setAttribute("id", "#guess-img-zoomin");
+        imgEl.setAttribute("src", "/asset/{{ .ID }}.jpeg");
+        imgEl.setAttribute(
+          "style",
+          "cursor: zoom-out; height: 100vh; position: absolute; left: 0; right: 0; margin-left: auto; margin-right: auto; margin: auto;",
+        );
+        questDiv.after(imgEl);
+        imgEl.addEventListener("click", () => {
+          overlay.style.cssText = "transform: scale(0)";
+          imgEl.remove();
+        });
+      }
+
+      guessImg.addEventListener("click", () => {
+        createZoominImage();
+      });
+    </script>
+  </body>
 </html>
