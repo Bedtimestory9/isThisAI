@@ -1,13 +1,18 @@
+html {
+  font-size: 62.5%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
 body {
   background-color: #f0ebdf;
-  box-sizing: border-box;
 }
 
 .quest-div {
   height: 100vh;
   display: flex;
   align-items: center;
-}
+
 
 .quest-content {
   display: flex;
@@ -18,6 +23,9 @@ body {
 
 .is-this-ai {
   width: 100vw;
+  height: 10rem;
+  position: fixed;
+  top: 1rem;
   text-align: center;
   font-size: 30px;
 }
@@ -39,79 +47,37 @@ body {
   overflow: hidden;
   width: 100%;
   height: 100%;
-  transform: scale(0);
-  transition: 0.1s ease;
+  visibility: hidden;
 }
 
 #guess-img {
-  max-width: 500px;
-  max-height: 400px;
+}
+
+.guess-img-zoomout {
+  max-width: 80rem;
+  max-height: 60rem;
   cursor: zoom-in;
 }
 
-.flip-box {
-  background-color: transparent;
-  /* max width of image + padding of flipbox front */
-  width: calc(500px + 20px + 20px);
-  height: 400px;
-  perspective: 1000px; /* Remove this if you don't want the 3D effect */
-}
-
-/* This container is needed to position the front and back side */
-.flip-box-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  transition: transform 0.8s;
-  transform-style: preserve-3d;
-}
-
-/* This is to reference for the js css add-in */
-/* .flip-box:hover .flip-box-inner { */
-/*   transform: rotateY(180deg); */
-/* } */
-
-/* Position the front and back side */
-.flip-box-front,
-.flip-box-back {
+.guess-img-zoomin {
+  cursor: zoom-out;
+  height: 100vh;
+  bottom: 0;
   position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-}
-
-/* Style the front side (fallback if image is missing) */
-.flip-box-front {
-  background-color: #d1ccbf;
-  color: black;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Style the back side */
-.flip-box-back {
-  transform: rotateY(180deg);
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 30px;
-  font-weight: bold;
-  color: black;
+  left: 0;
+  right: 0;
+  margin: auto;
 }
 
 .answer-div {
-  height: 200px;
+  height: 10rem;
   display: flex;
   justify-content: center;
 }
 
 .button-div {
   /* max width of image + padding of flipbox front */
-  width: calc(500px + 20px + 20px);
+  width: 100%;
   display: flex;
   justify-content: center;
   gap: 150px;
@@ -144,4 +110,13 @@ body {
 }
 #no-button:active {
   background: rgb(175, 48, 41);
+}
+
+@media (width < 90rem) {
+  .quest-content {
+    width: 100%;
+  }
+  .guess-img-zoomout {
+    max-width: 38rem;
+  }
 }
