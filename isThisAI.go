@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -10,43 +11,64 @@ import (
 )
 
 type MutexImageToGuess struct {
-	l        sync.RWMutex
-	ID       int
-	IsThisAI bool
+	l             sync.RWMutex
+	ID            int
+	IsThisAI      bool
+	ContainerSize int
 }
 
-func initImage() *MutexImageToGuess {
+func initImage(imageNum int) *MutexImageToGuess {
 	return &MutexImageToGuess{
-		ID: 1,
+		ID:            1,
+		ContainerSize: imageNum,
 	}
 }
 
-func (i *MutexImageToGuess) NextImage() *MutexImageToGuess {
+func (i *MutexImageToGuess) resetImage() *MutexImageToGuess {
 	i.l.Lock()
 	defer i.l.Unlock()
 
-	i.ID++
+	i.ID = 1
+	i.IsThisAI = i.appendAnswer().IsThisAI
 	return i
 }
 
-func (i *MutexImageToGuess) getAnswer() *MutexImageToGuess {
+func (i *MutexImageToGuess) getImage() *MutexImageToGuess {
 	i.l.Lock()
 	defer i.l.Unlock()
 
+	i.IsThisAI = i.appendAnswer().IsThisAI
+	return i
+}
+
+func (i *MutexImageToGuess) nextImage() *MutexImageToGuess {
+	i.l.Lock()
+	defer i.l.Unlock()
+
+	// If id exceeds maximum image size, it becomes the last image
+	if i.ID < i.ContainerSize {
+		i.ID++
+		i.IsThisAI = i.appendAnswer().IsThisAI
+	}
+	return i
+}
+
+func (i *MutexImageToGuess) appendAnswer() *MutexImageToGuess {
 	data, err := os.ReadFile("./dynamic/answer.json")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Reading from answer json failed!", err)
 	}
 
 	var imageData []MutexImageToGuess
+
 	err = json.Unmarshal(data, &imageData)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return &MutexImageToGuess{
-		ID: imageData[i.ID-1].ID, // using traditional index meaning it will start with 0
-	}
+	i.IsThisAI = imageData[i.ID-1].IsThisAI // using traditional index meaning it will start with 0
+
+	return i
 }
 
 func (i *MutexImageToGuess) imageHandler(w http.ResponseWriter, r *http.Request) {
@@ -60,20 +82,42 @@ func (i *MutexImageToGuess) imageHandler(w http.ResponseWriter, r *http.Request)
 	t.Execute(w, i)
 }
 
-// INFO: it might do too much things right now:
-// 1.execute getAnswer() and serialize json
-// 2.handle cors with Header().Set()
-// 3.execute NextImage()
-func (i *MutexImageToGuess) answerHandler(w http.ResponseWriter, r *http.Request) {
-	a := i.getAnswer()
-	j, err := json.Marshal(a)
-	if err != nil {
-		log.Fatal(err)
-	}
-	// In terms of cors here, it has to be `localhost`, not `127.0.0.1`
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:4321")
-	w.Write(j)
-	i.NextImage()
+func (i *MutexImageToGuess) answerHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		i.getImage()
+
+		j, err := json.Marshal(i)
+		if err != nil {
+			log.Fatal("Marshalling next image failed!", err)
+		}
+
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+
+		w.Write(j)
+	})
+}
+
+func (i *MutexImageToGuess) imageMiddleware(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		h.ServeHTTP(w, r)
+		answerReq, err := io.ReadAll(r.Body)
+		if err != nil {
+			log.Fatal("Reading answer response failed!", err)
+		}
+		reqObj := &MutexImageToGuess{}
+		err = json.Unmarshal(answerReq, reqObj)
+		if err != nil {
+			log.Fatal("Unmarshalling answer response to image object failed!", err)
+		}
+
+		actualAnswer := i.getImage().IsThisAI
+
+		if reqObj.IsThisAI == actualAnswer {
+			i.nextImage()
+		} else {
+			i.resetImage()
+		}
+	})
 }
 
 func main() {
@@ -83,9 +127,9 @@ func main() {
 	assetFS := http.FileServer(http.Dir("./asset"))
 	http.Handle("/asset/", http.StripPrefix("/asset/", assetFS))
 
-	image := initImage()
+	image := initImage(15)
 
 	http.HandleFunc("/", image.imageHandler)
-	http.HandleFunc("/answer", image.answerHandler)
+	http.Handle("/answer", image.imageMiddleware(image.answerHandler()))
 	log.Fatal(http.ListenAndServe(":4321", nil))
 }
