@@ -19,7 +19,7 @@ else {
         guessImg.classList.toggle("guess-img-zoomout");
     });
     yesButton.addEventListener("click", async () => {
-        const answerUrl = "http://127.0.0.1:4321/answer";
+        const answerUrl = "http://127.0.0.1:4321/answer"; // production: http://xreality.space/answer
         const res = await fetch(answerUrl, {
             method: "POST",
             body: JSON.stringify({ isThisAI: true }),
@@ -46,7 +46,7 @@ else {
         }
     });
     noButton.addEventListener("click", async () => {
-        const answerUrl = "http://127.0.0.1:4321/answer";
+        const answerUrl = "http://127.0.0.1:4321/answer"; // production: http://xreality.space/answer
         const res = await fetch(answerUrl, {
             method: "POST",
             body: JSON.stringify({ isThisAI: false }),

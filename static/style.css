@@ -99,6 +99,10 @@ body {
   color: white;
 }
 
+.answer-button:disabled {
+  cursor: not-allowed;
+}
+
 #yes-button {
   background: rgb(102, 128, 11);
 }

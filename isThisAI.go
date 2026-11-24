@@ -11,7 +11,7 @@ import (
 )
 
 type MutexImageToGuess struct {
-	l             sync.RWMutex
+	l             sync.Mutex
 	ID            int
 	IsThisAI      bool
 	ContainerSize int
@@ -29,7 +29,8 @@ func (i *MutexImageToGuess) resetImage() *MutexImageToGuess {
 	defer i.l.Unlock()
 
 	i.ID = 1
-	i.IsThisAI = i.appendAnswer().IsThisAI
+	i.IsThisAI = i.getAnswer().IsThisAI
+
 	return i
 }
 
@@ -37,7 +38,7 @@ func (i *MutexImageToGuess) getImage() *MutexImageToGuess {
 	i.l.Lock()
 	defer i.l.Unlock()
 
-	i.IsThisAI = i.appendAnswer().IsThisAI
+	i.IsThisAI = i.getAnswer().IsThisAI
 	return i
 }
 
@@ -48,12 +49,21 @@ func (i *MutexImageToGuess) nextImage() *MutexImageToGuess {
 	// If id exceeds maximum image size, it becomes the last image
 	if i.ID < i.ContainerSize {
 		i.ID++
-		i.IsThisAI = i.appendAnswer().IsThisAI
+		i.IsThisAI = i.getAnswer().IsThisAI
 	}
+
 	return i
 }
 
-func (i *MutexImageToGuess) appendAnswer() *MutexImageToGuess {
+func (i *MutexImageToGuess) getAnswer() *MutexImageToGuess {
+
+	imageData := lookUpAnswerFromFile()
+	i.IsThisAI = imageData[i.ID-1].IsThisAI // using traditional index meaning it will start with 0
+
+	return i
+}
+
+func lookUpAnswerFromFile() []MutexImageToGuess {
 	data, err := os.ReadFile("./dynamic/answer.json")
 	if err != nil {
 		log.Fatal("Reading from answer json failed!", err)
@@ -66,9 +76,7 @@ func (i *MutexImageToGuess) appendAnswer() *MutexImageToGuess {
 		log.Fatal(err)
 	}
 
-	i.IsThisAI = imageData[i.ID-1].IsThisAI // using traditional index meaning it will start with 0
-
-	return i
+	return imageData
 }
 
 func (i *MutexImageToGuess) imageHandler(w http.ResponseWriter, r *http.Request) {
