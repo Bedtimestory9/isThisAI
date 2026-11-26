@@ -13,12 +13,12 @@
       <div class="quest-content">
         <div class="is-this-ai">
           <b>Is this AI? </b>
-          <b class="progress">{{ .ID }} / {{ .ContainerSize }}</b>
+          <b class="progress">{{ .Data.ID }} / {{ .ContainerSize }}</b>
         </div>
         <img
           id="guess-img"
           class="guess-img-zoomout"
-          src="/asset/{{ .ID }}.jpeg"
+          src="/asset/{{ .Data.ID }}.jpeg"
           alt="image to guess"
         />
         <div class="answer-div">

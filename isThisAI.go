@@ -7,27 +7,20 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"sync"
 )
 
 type MutexImageToGuess struct {
-	l             sync.Mutex
-	ID            int
-	IsThisAI      bool
-	ContainerSize int
+	ID       int
+	IsThisAI bool
 }
 
-func initImage(imageNum int) *MutexImageToGuess {
+func initImage() *MutexImageToGuess {
 	return &MutexImageToGuess{
-		ID:            1,
-		ContainerSize: imageNum,
+		ID: 1,
 	}
 }
 
 func (i *MutexImageToGuess) resetImage() *MutexImageToGuess {
-	i.l.Lock()
-	defer i.l.Unlock()
-
 	i.ID = 1
 	i.IsThisAI = i.getAnswer().IsThisAI
 
@@ -35,25 +28,19 @@ func (i *MutexImageToGuess) resetImage() *MutexImageToGuess {
 }
 
 func (i *MutexImageToGuess) getImage() *MutexImageToGuess {
-	i.l.Lock()
-	defer i.l.Unlock()
-
 	i.IsThisAI = i.getAnswer().IsThisAI
 	return i
 }
 
-func (i *MutexImageToGuess) nextImage() *MutexImageToGuess {
-	i.l.Lock()
-	defer i.l.Unlock()
-
-	// If id exceeds maximum image size, it becomes the last image
-	if i.ID < i.ContainerSize {
-		i.ID++
-		i.IsThisAI = i.getAnswer().IsThisAI
-	}
-
-	return i
-}
+// func (i *MutexImageToGuess) nextImage() *MutexImageToGuess {
+// 	// If id exceeds maximum image size, it becomes the last image
+// 	if i.ID < i.ContainerSize {
+// 		i.ID++
+// 		i.IsThisAI = i.getAnswer().IsThisAI
+// 	}
+//
+// 	return i
+// }
 
 func (i *MutexImageToGuess) getAnswer() *MutexImageToGuess {
 
@@ -80,9 +67,6 @@ func lookUpAnswerFromFile() []MutexImageToGuess {
 }
 
 func (i *MutexImageToGuess) imageHandler(w http.ResponseWriter, r *http.Request) {
-	i.l.Lock()
-	defer i.l.Unlock()
-
 	t, err := template.ParseFiles("./page/index.html")
 	if err != nil {
 		log.Fatal(err)
@@ -90,7 +74,7 @@ func (i *MutexImageToGuess) imageHandler(w http.ResponseWriter, r *http.Request)
 	t.Execute(w, i)
 }
 
-func (i *MutexImageToGuess) answerHandler() http.Handler {
+func (i *MutexImageToGuess) imageAnswerHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		i.getImage()
 
@@ -105,9 +89,10 @@ func (i *MutexImageToGuess) answerHandler() http.Handler {
 	})
 }
 
-func (i *MutexImageToGuess) imageMiddleware(h http.Handler) http.Handler {
+func (i *MutexImageToGuess) imageMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		h.ServeHTTP(w, r)
+		next.ServeHTTP(w, r)
+
 		answerReq, err := io.ReadAll(r.Body)
 		if err != nil {
 			log.Fatal("Reading answer response failed!", err)
@@ -121,7 +106,7 @@ func (i *MutexImageToGuess) imageMiddleware(h http.Handler) http.Handler {
 		actualAnswer := i.getImage().IsThisAI
 
 		if reqObj.IsThisAI == actualAnswer {
-			i.nextImage()
+			// i.nextImage()
 		} else {
 			i.resetImage()
 		}
@@ -135,9 +120,8 @@ func main() {
 	assetFS := http.FileServer(http.Dir("./asset"))
 	http.Handle("/asset/", http.StripPrefix("/asset/", assetFS))
 
-	image := initImage(15)
-
-	http.HandleFunc("/", image.imageHandler)
-	http.Handle("/answer", image.imageMiddleware(image.answerHandler()))
+	s := InitSessManager()
+	http.Handle("/", s.SessManagerStartSessMiddleware(s.ImageHandler()))
+	// http.Handle("/answer", image.imageMiddleware(image.imageAnswerHandler()))
 	log.Fatal(http.ListenAndServe(":4321", nil))
 }
