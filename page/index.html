@@ -13,14 +13,25 @@
       <div class="quest-content">
         <div class="is-this-ai">
           <b>Is this AI? </b>
+          {{ if le .Data.ID .ContainerSize }}
           <b class="progress">{{ .Data.ID }} / {{ .ContainerSize }}</b>
+          {{ end }}
         </div>
+        {{ if le .Data.ID .ContainerSize }}
         <img
           id="guess-img"
           class="guess-img-zoomout"
           src="/asset/{{ .Data.ID }}.jpeg"
           alt="image to guess"
         />
+        {{ else }}
+        <img
+          id="guess-img"
+          class="guess-img-zoomout"
+          src="/asset/woohoo.gif"
+          alt="woohoo"
+        />
+        {{ end }}
         <div class="answer-div">
           <div class="button-div">
             <button class="answer-button" id="yes-button" type="button">

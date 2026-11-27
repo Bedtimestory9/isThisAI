@@ -5,11 +5,12 @@ const noButton = document.querySelector<HTMLButtonElement>("#no-button");
 const overlay = document.querySelector<HTMLDivElement>("#overlay");
 const banner = document.querySelector<HTMLDivElement>(".is-this-ai b");
 
-type Answer = {
+type Image = {
   ID: string;
   IsThisAI: boolean;
-  ContainerSize: number;
 };
+
+const SLEEP_TIME = 0;
 
 if (
   yesButton == null ||
@@ -27,55 +28,57 @@ if (
   });
 
   yesButton.addEventListener("click", async () => {
-    const answerUrl = "http://127.0.0.1:4321/answer"; // production: http://xreality.space/answer
+    const answerUrl = "http://localhost:4321/answer"; // production: http://xreality.space/answer
     const res = await fetch(answerUrl, {
       method: "POST",
+      credentials: "include",
       body: JSON.stringify({ isThisAI: true }),
     });
     if (!res.ok) {
       throw new Error(`Response status: ${res.status}`);
     }
-    const answer: Answer = await res.json();
-    if (answer.IsThisAI == true) {
+    const image: Image = await res.json();
+    if (image.IsThisAI == true) {
       banner.style.color = "rgb(190, 201, 126)";
       banner.textContent = "🎉 You are right! This image is AI generated.";
       yesButton.disabled = true;
       noButton.disabled = true;
-      await new Promise((r) => setTimeout(r, 3000));
+      await new Promise((r) => setTimeout(r, SLEEP_TIME));
       window.location.reload();
     } else {
       banner.style.color = "rgb(248, 154, 138)";
       banner.textContent = "No, this image is created by human.";
       yesButton.disabled = true;
       noButton.disabled = true;
-      await new Promise((r) => setTimeout(r, 3000));
+      await new Promise((r) => setTimeout(r, SLEEP_TIME));
       window.location.reload();
     }
   });
 
   noButton.addEventListener("click", async () => {
-    const answerUrl = "http://127.0.0.1:4321/answer"; // production: http://xreality.space/answer
+    const answerUrl = "http://localhost:4321/answer"; // production: http://xreality.space/answer
     const res = await fetch(answerUrl, {
       method: "POST",
+      credentials: "include",
       body: JSON.stringify({ isThisAI: false }),
     });
     if (!res.ok) {
       throw new Error(`Response status: ${res.status}`);
     }
-    const answer: Answer = await res.json();
-    if (answer.IsThisAI == true) {
+    const image: Image = await res.json();
+    if (image.IsThisAI == true) {
       banner.style.color = "rgb(248, 154, 138)";
       banner.textContent = "No, this image is AI generated.";
       yesButton.disabled = true;
       noButton.disabled = true;
-      await new Promise((r) => setTimeout(r, 3000));
+      await new Promise((r) => setTimeout(r, SLEEP_TIME));
       window.location.reload();
     } else {
       banner.style.color = "rgb(190, 201, 126)";
       banner.textContent = "🎉 You are right, this image is created by human.";
       yesButton.disabled = true;
       noButton.disabled = true;
-      await new Promise((r) => setTimeout(r, 3000));
+      await new Promise((r) => setTimeout(r, SLEEP_TIME));
       window.location.reload();
     }
   });
